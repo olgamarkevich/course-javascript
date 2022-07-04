@@ -148,7 +148,41 @@ function deleteTextNodesRecursive(where) {
      texts: 3
    }
  */
-function collectDOMStat(root) {}
+function collectDOMStat(root) {
+  let stat = {
+    tags: {},
+    classes: {},
+    texts: 0,
+  };
+
+  function iteration(element) {
+    for (let item of element.childNodes) {
+      if (item.nodeType == 1) {
+        iteration(item);
+        if (stat.tags[item.tagName]) {
+          stat.tags[item.tagName]++;
+        } else {
+          stat.tags[item.tagName] = 1;
+        }
+        item.classList.forEach((className) => {
+          if (stat.classes[className]) {
+            stat.classes[className]++;
+          } else {
+            stat.classes[className] = 1;
+          }
+        });
+      }
+      if (item.nodeType == 3) {
+        stat.texts++;
+      }
+      console.log(item.classList);
+    }
+  }
+
+  iteration(root);
+
+  return stat;
+}
 
 /*
  Задание 8 *:
@@ -182,7 +216,32 @@ function collectDOMStat(root) {}
      nodes: [div]
    }
  */
-function observeChildNodes(where, fn) {}
+function observeChildNodes(where, fn) {
+  let observer = new MutationObserver((mutationRecords) => {
+    mutationRecords.forEach(function (item) {
+      if (item.type == 'childList') {
+        if (item.addedNodes.length > 0) {
+          fn({
+            type: 'insert',
+            nodes: [...item.addedNodes],
+          });
+        }
+
+        if (item.removedNodes.length > 0) {
+          fn({
+            type: 'remove',
+            nodes: [...item.removedNodes],
+          });
+        }
+      }
+    });
+  });
+
+  observer.observe(where, {
+    childList: true, // наблюдать за непосредственными детьми
+    subtree: true, // и более глубокими потомками
+  });
+}
 
 export {
   createDivWithText,
