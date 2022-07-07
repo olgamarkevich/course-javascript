@@ -31,28 +31,24 @@ export function createDiv() {
     ', ' +
     Math.floor(Math.random() * 255) +
     ')';
-  diva.style.width = Math.floor(Math.random() * 1000) + 'px';
-  diva.style.height = Math.floor(Math.random() * 1000) + 'px';
-  diva.style.position = 'absolute';
+  diva.style.width = Math.floor(Math.random() * 500) + 'px';
+  diva.style.height = Math.floor(Math.random() * 500) + 'px';
   diva.style.top = Math.floor(Math.random() * 500) + 'px';
   diva.style.left = Math.floor(Math.random() * 500) + 'px';
+  diva.className = 'draggable-div';
   diva.draggable = true;
 
-  console.log(diva);
-  homeworkContainer.appendChild(diva);
-
-  diva.addEventListener('dragstart', function () {
-    e.dataTransfer.setData('text/plain', e.target.id);
+  diva.addEventListener('dragend', function (e) {
+    diva.style.top = e.clientY - diva.offsetHeight / 2 + 'px';
+    diva.style.left = e.clientX - diva.offsetWidth / 2 + 'px';
   });
 
-  diva.addEventListener('dragover', function () {
-    e.preventDefault();
-  });
+  return diva;
 }
 
 const addDivButton = homeworkContainer.querySelector('#addDiv');
 
 addDivButton.addEventListener('click', function () {
   const div = createDiv();
-  // homeworkContainer.appendChild(div);
+  homeworkContainer.appendChild(div);
 });
