@@ -45,8 +45,42 @@ const addButton = homeworkContainer.querySelector('#add-button');
 // таблица со списком cookie
 const listTable = homeworkContainer.querySelector('#list-table tbody');
 
-filterNameInput.addEventListener('input', function () {});
+allCookie();
 
-addButton.addEventListener('click', () => {});
+filterNameInput.addEventListener('input', function (e) {
+  allCookie();
+});
 
-listTable.addEventListener('click', (e) => {});
+function getCookie() {
+  const result = document.cookie.split('; ').reduce((prev, current) => {
+    const [name, value] = current.split('=');
+    prev[name] = value;
+    return prev;
+  }, {});
+
+  return document.cookie ? result : {};
+}
+
+function allCookie() {
+  const cookie = getCookie();
+  listTable.innerHTML = '';
+  for (const key in cookie) {
+    if (
+      !filterNameInput.value ||
+      key?.includes(filterNameInput.value) ||
+      cookie[key]?.includes(filterNameInput.value)
+    ) {
+      listTable.innerHTML += `<tr><td>${key}</td><td>${cookie[key]}</td><td><button data-key='${key}'>Удалить</button></td></tr>`;
+    }
+  }
+}
+
+addButton.addEventListener('click', () => {
+  document.cookie = `${addNameInput.value} = ${addValueInput.value}`;
+  allCookie();
+});
+
+listTable.addEventListener('click', (e) => {
+  document.cookie = `${e.target.dataset.key}=deleted; max-age=0`;
+  allCookie();
+});
